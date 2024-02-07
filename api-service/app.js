@@ -10,7 +10,19 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/', indexRouter);
+function auth(req, res, next){
+  if(!req.query.user && !req.query.password){
+    res.status(401).json({
+      "error": true,
+      "message": "User not authenticated",
+      "code": "noauth"
+    });
+  }else{
+    next();
+  }
+}
+
+app.use('/', auth, indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
